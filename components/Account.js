@@ -8,11 +8,6 @@ export default function Account() {
   const { account } = value.state;
   const { ensName, ensAvatar } = useENS(account);
 
-  const copy = async () => {
-    await navigator.clipboard.writeText(account);
-    alert("Text copied");
-  };
-
   const truncateAddress = (account) => {
     return (
       account.substr(0, 5) +

@@ -39,7 +39,7 @@ export default function CreateProduct() {
   });
 
   const handleSubmission = async (values) => {
-    const { name, variant} = values;
+    const { brand, product, variant } = values;
     
         let types = []
         let quantities = []
@@ -53,7 +53,7 @@ export default function CreateProduct() {
     } else {
       const factory = inventoryNFT(addresses.inventoryNft, web3)
       try {
-        let result = await factory.methods.createProduct(name, types, quantities).send({ from: account })
+        let result = await factory.methods.createProduct(brand, product, types, quantities).send({ from: account })
         console.log("This is the result", result)
         setDidSubmit(true)
       } catch(e) {
@@ -76,13 +76,26 @@ export default function CreateProduct() {
       <HStack w="80%" spacing="10%">
         <FormControl isRequired>
 
-        <FormLabel color="whiteAlpha.800">Name: </FormLabel>
+        <FormLabel color="whiteAlpha.800">Brand: </FormLabel>
         <Input
           w="100%"
           color="white"
-          name="name"
+          name="brand"
+          placeholder="LGT"
+          {...register("brand")}
+        />
+        </FormControl>
+      </HStack>
+      <HStack w="80%" spacing="10%">
+        <FormControl isRequired>
+
+        <FormLabel color="whiteAlpha.800">Product: </FormLabel>
+        <Input
+          w="100%"
+          color="white"
+          name="product"
           placeholder="e.g., Crewneck, Varsity Jacket, Socks"
-          {...register("name")}
+          {...register("product")}
         />
         </FormControl>
       </HStack>

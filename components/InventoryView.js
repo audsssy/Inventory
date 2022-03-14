@@ -14,7 +14,6 @@ import {
   Td,
   TableCaption,
 } from "@chakra-ui/react";
-// import { fetchInventory } from "./eth/FetchInventory";
 import { addresses } from "./eth/addresses";
 import { ethers } from "ethers";
 const abi = require("../abi/inventoryNFT.json");
@@ -22,46 +21,48 @@ const abi = require("../abi/inventoryNFT.json");
 export default function InventoryView() {
   const value = useContext(AppContext);
   const { web3, account, chainId } = value.state;
+  const [brand, setBrand] = useState("");
+  const [product, setProduct] = useState("");
+  const [variant, setVariant] = useState("");
+  const [quantity, setQuantity] = useState(0);
+  const [inventory, setInventory] = useState([0, 0, 0, 0]);
 
-  const [name, setName] = useState("");
-  const [variant, setVariant] = useState([]);
-  const [quantity, setQuantity] = useState([]);
-  const [inventory, setInventory] = useState([]);
-
-  const fetchInventory = async () => {
+  const fetchProduct = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
     const signer = provider.getSigner();
     const contract = new ethers.Contract(addresses.inventoryNft, abi, signer);
+
     const numOfProducts = await contract.productId();
 
-    // let name = []
-    let _variant = [];
-    let _quantityPerVariant = [];
+    // let product = []
+    let _variant = "";
+    let _quantity = 0;
     let _inventory = [];
 
     for (let i = 0; i < numOfProducts; i++) {
       contract
         .getProducts(i)
         .then((data) => {
-          setName(data[0]);
-
-          for (let j = 0; j < data[1].length; j++) {
-            _variant.push(data[1][j]);
-            setVariant(_variant);
-          }
+          setBrand(data[0])
+          setProduct(data[1]);
 
           for (let j = 0; j < data[2].length; j++) {
-            _quantityPerVariant.push(
-              ethers.utils.formatUnits(data[2][j].toString(), "wei")
-            );
-            setQuantity(_quantityPerVariant);
+            _variant = _variant + ", " + data[2][j];
+            setVariant(_variant.slice(2));
           }
 
           for (let j = 0; j < data[3].length; j++) {
+            _quantity =
+              parseInt(ethers.utils.formatUnits(data[3][j].toString(), "wei")) +
+              _quantity;
+            setQuantity(_quantity);
+          }
+
+          for (let j = 0; j < data[4].length; j++) {
             _inventory.push(
-              ethers.utils.formatUnits(data[3][j].toString(), "wei")
+              ethers.utils.formatUnits(data[4][j].toString(), "wei")
             );
-            setInventory(_inventory);
+            setInventory([..._inventory]);
           }
         })
         .catch((e) => {
@@ -70,24 +71,7 @@ export default function InventoryView() {
     }
   };
 
-  const getVariants = () => {
-    let variant_ = ""
-    let length 
-    if (variant) {
-      length = variant.length
-    } else {
-      return
-    }
-
-    for (let i = 0; i < length; i++) {
-      (i = 0) ? variant_ = variant_ : variant_ = variant_ + ", " + variant[i]
-    }
-
-    return variant_
-  }
-
   const SetTableRow = (prop) => {
-    console.log(prop.variants)
     return (
       <Tr>
         <Td>{prop.brand}</Td>
@@ -106,31 +90,17 @@ export default function InventoryView() {
     if (web3 === null) {
       value.toast("Please connect your wallet.");
     } else {
-      fetchInventory();
+      fetchProduct();
     }
 
-    console.log(name, variant, quantity, inventory);
+    console.log(product, variant, quantity, inventory);
   }, []);
 
   return (
     <Box bg="blue" color="white">
-      {name && <Text>{name}</Text>}
-      {variant && <Text>{variant}</Text>}
-      {quantity && <Text>{quantity}</Text>}
-      {inventory && <Text>{inventory}</Text>}
       <Table variant="unstyled">
         {/* <TableCaption>Imperial to metric conversion factors</TableCaption> */}
         <Thead>
-          <SetTableRow
-            brand={"brand"}
-            product={name}
-            variants={getVariants()}
-            quantity={"quantity"}
-            available={"available"}
-            reserved={"reserved"}
-            sold={"sold"}
-            shipped={"shipped"}
-          ></SetTableRow>
           <Tr>
             <Th>Brand</Th>
             <Th>Product</Th>
@@ -143,11 +113,16 @@ export default function InventoryView() {
           </Tr>
         </Thead>
         <Tbody>
-          <Tr>
-            <Td>inches</Td>
-            <Td>millimetres (mm)</Td>
-            <Td isNumeric>25.4</Td>
-          </Tr>
+          <SetTableRow
+            brand={brand}
+            product={product}
+            variants={variant}
+            quantity={quantity}
+            available={inventory[0]}
+            reserved={inventory[1]}
+            sold={inventory[2]}
+            shipped={inventory[3]}
+          ></SetTableRow>
           <Tr>
             <Td>feet</Td>
             <Td>centimetres (cm)</Td>

@@ -39,12 +39,6 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
   }, [address]);
 
-  // useEffect(() => {
-  //   if (chainId != null) {
-  //     isCorrectChain();
-  //   }
-  // }, [chainId]);
-
   const subscribe = async (provider) => {
     provider.on("networkChanged", (net) => changeChain(net));
     provider.on("accountsChanged", (accounts) => changeAccount(accounts));
