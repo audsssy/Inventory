@@ -11,7 +11,8 @@ export default function NavRightContainer() {
   const { account } = value.state;
   const [isAdmin, setIsAdmin] = useState(false);
   const admin = [
-    "0x4744cda32be7b3e75b9334001da9ed21789d4c0d", "0x438b52BB250C5E8b6b41be30a93139f92b3c1DA8"
+    "0x4744cda32be7b3e75b9334001da9ed21789d4c0d",
+    "0x438b52BB250C5E8b6b41be30a93139f92b3c1DA8",
   ];
 
   const copy = async () => {
@@ -20,7 +21,9 @@ export default function NavRightContainer() {
 
   useEffect(() => {
     if (account) {
-      admin.includes(account.toLowerCase()) ? setIsAdmin(true) : setIsAdmin(false);
+      admin.includes(account.toLowerCase())
+        ? setIsAdmin(true)
+        : setIsAdmin(false);
     }
   }, [account]);
 
@@ -29,9 +32,16 @@ export default function NavRightContainer() {
       <HStack h="45px" align={"center"}>
         <Link href="/admin">
           <a>
-           {isAdmin && <Button variant="outline" border="1px solid" mr="10px" textColor="white">
-            Admin
-          </Button>}
+            {isAdmin && (
+              <Button
+                variant="outline"
+                border="1px solid"
+                mr="10px"
+                textColor="white"
+              >
+                Admin
+              </Button>
+            )}
           </a>
         </Link>
         <HStack

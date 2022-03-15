@@ -21,8 +21,10 @@ const abi = require("../abi/inventoryNFT.json");
 export default function InventoryView() {
   const value = useContext(AppContext);
   const { web3, account, chainId } = value.state;
+  const [toggleInventory, setToggleInventory] = useState(false)
   const [brand, setBrand] = useState("");
   const [product, setProduct] = useState("");
+  const [products, setProducts] = useState([{}])
   const [variant, setVariant] = useState("");
   const [quantity, setQuantity] = useState(0);
   const [inventory, setInventory] = useState([0, 0, 0, 0]);
@@ -34,6 +36,15 @@ export default function InventoryView() {
 
     const numOfProducts = await contract.productId();
 
+    // let _product = {
+    //   brand: "",
+    //   name: "", 
+    //   variants: "",
+    //   quantity: 0,
+    //   inventory: [4],
+    // }
+
+    let products = [{}]
     // let product = []
     let _variant = "";
     let _quantity = 0;
@@ -43,46 +54,79 @@ export default function InventoryView() {
       contract
         .getProducts(i)
         .then((data) => {
+          let _product = {}
+
+          _product.brand = data[0]
+          _product.name = data[1]
           setBrand(data[0])
           setProduct(data[1]);
 
+          
           for (let j = 0; j < data[2].length; j++) {
             _variant = _variant + ", " + data[2][j];
             setVariant(_variant.slice(2));
+            _product.variants = _variant.slice(2)
           }
+          _variant = ""
 
           for (let j = 0; j < data[3].length; j++) {
             _quantity =
               parseInt(ethers.utils.formatUnits(data[3][j].toString(), "wei")) +
               _quantity;
             setQuantity(_quantity);
+            
+            _product.quantity = _quantity
           }
+          _quantity = 0
 
           for (let j = 0; j < data[4].length; j++) {
             _inventory.push(
               ethers.utils.formatUnits(data[4][j].toString(), "wei")
             );
             setInventory([..._inventory]);
+            
+            _product.inventory = [..._inventory]
           }
+          _inventory = []
+          products.push(_product)
+
         })
         .catch((e) => {
           console.log(e);
-        });
-    }
-  };
+        });        
+      }
+      products.splice(0,1)
+      setProducts(products)
+    };
 
-  const SetTableRow = (prop) => {
+    const SetTableRow = (prop) => {
+      console.log(prop)
+      return (
+        <Tr>
+          <Td>{prop.brand}</Td>
+          <Td>{prop.name}</Td>
+          <Td>{prop.variants}</Td>
+          <Td>{prop.quantity}</Td>
+          {/* <Td>{prop.inventory[0]}</Td>
+          <Td>{prop.inventory[1]}</Td>
+          <Td>{prop.inventory[2]}</Td>
+          <Td>{prop.inventory[3]}</Td> */}
+        </Tr>
+      );
+    };
+ 
+
+  const SetTableRow2 = (prop) => {    
+    
+    
+    const Table = prop.prop.map((data, i) => {
+      SetTableRow(data)
+    })
+
     return (
-      <Tr>
-        <Td>{prop.brand}</Td>
-        <Td>{prop.product}</Td>
-        <Td>{prop.variants}</Td>
-        <Td>{prop.quantity}</Td>
-        <Td>{prop.available}</Td>
-        <Td>{prop.reserved}</Td>
-        <Td>{prop.sold}</Td>
-        <Td>{prop.shipped}</Td>
-      </Tr>
+      <>
+        {Table}
+      </>
     );
   };
 
@@ -91,10 +135,14 @@ export default function InventoryView() {
       value.toast("Please connect your wallet.");
     } else {
       fetchProduct();
+      setToggleInventory(true);
     }
-
-    console.log(product, variant, quantity, inventory);
   }, []);
+
+  useEffect(() => {
+
+    setToggleInventory(true);
+  }, [products]);
 
   return (
     <Box bg="blue" color="white">
@@ -113,6 +161,11 @@ export default function InventoryView() {
           </Tr>
         </Thead>
         <Tbody>
+          {toggleInventory && <SetTableRow2 prop={products}
+          ></SetTableRow2>}
+        
+          {toggleInventory && 
+          
           <SetTableRow
             brand={brand}
             product={product}
@@ -123,6 +176,7 @@ export default function InventoryView() {
             sold={inventory[2]}
             shipped={inventory[3]}
           ></SetTableRow>
+          }
           <Tr>
             <Td>feet</Td>
             <Td>centimetres (cm)</Td>
