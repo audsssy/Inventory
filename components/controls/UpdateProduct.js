@@ -21,7 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
-import inventoryNFT from "../eth/InventoryNft";
+import inventory from "../eth/InventoryNft";
 import { addresses } from "../eth/addresses";
 
 export default function UpdateProduct() {
@@ -48,7 +48,7 @@ export default function UpdateProduct() {
     if (web3 === null) {
       value.toast("Please connect your wallet")
     } else {
-      const factory = inventoryNFT(addresses.inventoryNft, web3)
+      const factory = inventory(addresses.inventory, web3)
       try {
         let result = await factory.methods.updateProduct(product, name, types, quantities).send({ from: account })
         console.log("This is the result", result)

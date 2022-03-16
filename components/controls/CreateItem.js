@@ -24,7 +24,7 @@ import {
 } from "@chakra-ui/react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
-import inventoryNFT from "../eth/InventoryNft";
+import inventory from "../eth/inventory";
 import { addresses } from "../eth/addresses";
 import { ethers } from "ethers";
 
@@ -44,7 +44,7 @@ export default function CreateProduct() {
 
 
   const handleSubmission = async (values) => {
-    const { product, price, location, tag, digitization, variant, note } = values;
+    const { product, price, location, chip, digitization, variant, note } = values;
 
     let types = []
     let quantities = []
@@ -55,9 +55,9 @@ export default function CreateProduct() {
     if (web3 === null) {
       value.toast("Please connect your wallet")
     } else {
-      const factory = inventoryNFT(addresses.inventoryNft, web3)
+      const factory = inventory(addresses.inventory, web3)
       try {
-        let result = await factory.methods.mintItem(product, types, ethers.utils.parseEther(price), location, tag, digitization, note).send({ from: account })
+        let result = await factory.methods.mintItem(product, types, ethers.utils.parseEther(price), location, chip, digitization, note).send({ from: account })
         console.log("This is the result", result)
         setDidSubmit(true)
       } catch (e) {
@@ -120,11 +120,11 @@ export default function CreateProduct() {
       </HStack>
       <HStack w="80%" spacing={10} align="stretch">
         <HStack w="40">
-          <Text color="whiteAlpha.800">Tag Integration</Text>
+          <Text color="whiteAlpha.800">LGT Tag Integration</Text>
           <Checkbox
             color="white"
-            name="tag"
-            {...register("tag")}
+            name="chip"
+            {...register("chip")}
           />
         </HStack>
         <Spacer />
