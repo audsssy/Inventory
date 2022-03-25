@@ -1,3 +1,6 @@
 export const addresses = {
-  inventory: "0xD278B49e81307ce730855FB2184060e2c347c2c8",
+  inventory: "0x21431b704E1DdF9232C3968832051A6a09FB7FeC",
 }
+
+
+// 0xD278B49e81307ce730855FB2184060e2c347c2c8

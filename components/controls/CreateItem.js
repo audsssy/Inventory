@@ -83,7 +83,7 @@ export default function CreateProduct() {
             w="100%"
             color="white"
             name="product"
-            placeholder="e.g., Crewneck, Varsity Jacket, Socks"
+            placeholder="e.g., 0, 1, 2"
             {...register("product")}
           />
         </FormControl>
