@@ -21,7 +21,7 @@ import {
 } from "@chakra-ui/react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
-import inventory from "../eth/InventoryNft";
+import inventory from "../eth/inventory";
 import { addresses } from "../eth/addresses";
 
 

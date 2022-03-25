@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import theme from "../styles/theme";
 import "@fontsource/poppins/300.css";
 import "@fontsource/poppins/700.css";
-const abi = require("../abi/inventoryNFT.json");
+const abi = require("../abi/inventory.json");
 import { createToast } from "../utils/toast";
 // import { correctNetwork } from "../utils/network";
 import { getNetworkName, getChainInfo } from "../utils/formatters";

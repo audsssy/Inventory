@@ -1,11 +1,11 @@
 import { addresses } from "./addresses";
 import { ethers } from "ethers";
-const abi = require("../../abi/inventoryNFT.json");
+const abi = require("../../abi/inventory.json");
 
 export async function fetchProduct(productId) {
   const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
   const signer = provider.getSigner();
-  const contract = new ethers.Contract(addresses.inventoryNft, abi, signer);
+  const contract = new ethers.Contract(addresses.inventory, abi, signer);
 
   const _product = {}
     let _variant = "";

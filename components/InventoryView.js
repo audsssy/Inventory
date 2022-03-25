@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { addresses } from "./eth/addresses";
 import { ethers } from "ethers";
-const abi = require("../abi/inventoryNFT.json");
+const abi = require("../abi/inventory.json");
 import { fetchProduct } from "./eth/fetchProduct";
 
 export default function InventoryView() {
@@ -24,7 +24,7 @@ export default function InventoryView() {
   const getProductCount = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
     const signer = provider.getSigner();
-    const contract = new ethers.Contract(addresses.inventoryNft, abi, signer);
+    const contract = new ethers.Contract(addresses.inventory, abi, signer);
     const productId = await contract.productId();
     productId = parseInt(ethers.utils.formatUnits(productId, "wei"));
     setNumOfProducts(productId);

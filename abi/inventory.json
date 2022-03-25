@@ -337,6 +337,30 @@
 	{
 		"inputs": [
 			{
+				"internalType": "string",
+				"name": "_a",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_b",
+				"type": "string"
+			}
+		],
+		"name": "equal",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
@@ -348,6 +372,25 @@
 				"internalType": "address",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "getItemVariants",
+		"outputs": [
+			{
+				"internalType": "string[]",
+				"name": "",
+				"type": "string[]"
 			}
 		],
 		"stateMutability": "view",
@@ -723,7 +766,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256[]",
-				"name": "itemIds",
+				"name": "tokenIds",
 				"type": "uint256[]"
 			}
 		],
@@ -805,7 +848,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256[]",
-				"name": "itemIds",
+				"name": "tokenIds",
 				"type": "uint256[]"
 			},
 			{
@@ -823,7 +866,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256[]",
-				"name": "itemIds",
+				"name": "tokenIds",
 				"type": "uint256[]"
 			},
 			{
@@ -841,7 +884,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256[]",
-				"name": "itemIds",
+				"name": "tokenIds",
 				"type": "uint256[]"
 			},
 			{
@@ -859,7 +902,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256[]",
-				"name": "itemIds",
+				"name": "tokenIds",
 				"type": "uint256[]"
 			},
 			{
@@ -1001,8 +1044,13 @@
 		"inputs": [
 			{
 				"internalType": "uint256[]",
-				"name": "itemIds",
+				"name": "tokenIds",
 				"type": "uint256[]"
+			},
+			{
+				"internalType": "string[]",
+				"name": "variants",
+				"type": "string[]"
 			},
 			{
 				"internalType": "address",
