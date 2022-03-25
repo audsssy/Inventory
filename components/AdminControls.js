@@ -1,4 +1,4 @@
-import React, { useState, useContext} from "react"
+import React, { useState, useContext } from "react"
 import AppContext from "./AppContext";
 import {
   Button,
@@ -7,13 +7,15 @@ import {
   HStack,
   VStack,
   Text,
+  Spacer,
 } from "@chakra-ui/react"
 import { AiOutlineCheckCircle, AiOutlineWarning } from "react-icons/ai"
 import { getNetworkName } from "../utils/formatters";
 import CreateProduct from "./controls/CreateProduct"
-import UpdateProduct from "./controls/UpdateProduct";
+// import UpdateProduct from "./controls/UpdateProduct";
 import CreateItem from "./controls/CreateItem";
-import UpdateItem from "./controls/UpdateItem";
+// import UpdateItem from "./controls/UpdateItem";
+import ReadyAuction from "./controls/ReadyAuction"
 
 export default function AdminControls() {
   const value = useContext(AppContext);
@@ -77,6 +79,18 @@ export default function AdminControls() {
     setDs(false)
   }
 
+  const toggleRa = () => {
+    setP(false)
+    setUp(false)
+    setI(false)
+    setUi(false)
+    setRa(() => !ra)
+    setBs(false)
+    setSale(false)
+    setShipping(false)
+    setDs(false)
+  }
+
   const handleChange = async (e) => {
     let id = e.target.value
     setNetwork(id)
@@ -94,24 +108,24 @@ export default function AdminControls() {
 
   return (
     <>
-    <VStack>
-    {(chainId != network || account == null) ? (
+      <VStack>
+        {(chainId != network || account == null) ? (
           <>
             <HStack id="not-connected">
               <Icon color="white" as={AiOutlineWarning}></Icon>
               <Text color="white">
                 Please connect your wallet to Rinkeby
               </Text>
-            <Button h="30px" bg="yellow.400" onClick={() => handleConnect()}>
-              Connect
-            </Button>
+              <Button h="30px" bg="yellow.400" onClick={() => handleConnect()}>
+                Connect
+              </Button>
             </HStack>
             <br></br>
           </>
         ) : (
           <>
             <HStack id="connected-to-network">
-            <Icon color="white" as={AiOutlineCheckCircle}></Icon>
+              <Icon color="white" as={AiOutlineCheckCircle}></Icon>
               <Text color="white">
                 <i>connected to Rinkeby</i>
               </Text>
@@ -119,27 +133,54 @@ export default function AdminControls() {
             <br></br>
           </>
         )}
-      <HStack>
-        <Button bg="white" color="black" onClick={toggleP}>Create Product</Button>
-        <Button bg="white" color="black" onClick={toggleUp}>Update Product</Button>
-        <Button bg="white" color="black" onClick={toggleI}>Create Item</Button>
-        <Button bg="white" color="black" onClick={toggleUi}>Update Item</Button>
-        <Button>Ready for Auction</Button>
-      </HStack>
-      <HStack>
-        <Button>Set Bid Status</Button>
-        <Button>Set Sale Status</Button>
-        <Button>Set Shipping Status</Button>
-        <Button>Set Delivery Status</Button>
-      </HStack>
-    </VStack>
-    <VStack>
+        <HStack w="50%">
+          <VStack align="flex-start">
+            <Text fontStyle="italic" fontSize="3xl" color="white">Create</Text>
+            <HStack>
+              <Button onClick={toggleP}>Product</Button>
+              <Button onClick={toggleI}>Item</Button>
+            </HStack>
+          </VStack>
+          <Spacer></Spacer>
+          <VStack align="flex-start">
+            <Text fontStyle="italic" fontSize="3xl" color="white">Edit</Text>
+            <HStack>
+              <Button>Product</Button>
+              <Button>Item</Button>
+            </HStack>
+          </VStack>
+        </HStack>
+        <br />
+        <HStack  w="50%">
 
-    {p && <CreateProduct />}
-    {up && <UpdateProduct />}
-    {i && <CreateItem />}
-    {ui && <UpdateItem />}
-    </VStack>
+        <VStack align="flex-start">
+          <Text fontStyle="italic" fontSize="3xl" color="white">Ready</Text>
+          <HStack>
+            <Button onClick={toggleRa}>Ready for Auction</Button>
+
+          </HStack>
+        </VStack>
+        <Spacer />
+        <VStack w="50%" align="flex-start">
+          <Text fontStyle="italic" fontSize="3xl" color="white">Update</Text>
+          <HStack>
+            <Button>Bid Status</Button>
+            <Button>Sale Status</Button>
+          </HStack>
+          <HStack>
+            <Button>Shipping Status</Button>
+            <Button>Delivery Status</Button>
+          </HStack>
+        </VStack>
+        </HStack>
+      </VStack>
+      <VStack>
+        {p && <CreateProduct />}
+        {up && <UpdateProduct />}
+        {i && <CreateItem />}
+        {ui && <UpdateItem />}
+        {ra && <ReadyAuction />}
+      </VStack>
     </>
 
   );

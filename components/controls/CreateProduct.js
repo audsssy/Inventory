@@ -37,7 +37,7 @@ export default function CreateProduct() {
     name: "variant",
   });
 
-  const handleSubmission = async (values) => {
+  const submit = async (values) => {
     const { brand, product, variant } = values;
     
         let types = []
@@ -67,7 +67,7 @@ export default function CreateProduct() {
   }, []);
 
   return (
-    <VStack w="70%" mt="5vh" as="form" onSubmit={handleSubmit(handleSubmission)} alignItems="center" spacing="5%">
+    <VStack w="70%" mt="5vh" as="form" onSubmit={handleSubmit(submit)} alignItems="center" spacing="5%">
       <Heading as="h1" color="whiteAlpha.800">
         <b>Create Product</b>
       </Heading>

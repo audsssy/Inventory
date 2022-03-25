@@ -43,13 +43,13 @@ export default function CreateProduct() {
 
 
 
-  const handleSubmission = async (values) => {
+  const submit = async (values) => {
     const { product, price, location, chip, digitization, variant, note } = values;
 
-    let types = []
+    let variants_ = []
     let quantities = []
     for (let i = 0; i < variant.length; i++) {
-      types.push(variant[i].type)
+      variants_.push(variant[i].type)
       quantities.push(variant[i].quantity)
     }
     if (web3 === null) {
@@ -57,7 +57,7 @@ export default function CreateProduct() {
     } else {
       const factory = inventory(addresses.inventory, web3)
       try {
-        let result = await factory.methods.mintItem(product, types, ethers.utils.parseEther(price), location, chip, digitization, note).send({ from: account })
+        let result = await factory.methods.mintItem(product, variants_, ethers.utils.parseEther(price), location, chip, digitization, note).send({ from: account })
         console.log("This is the result", result)
         setDidSubmit(true)
       } catch (e) {
@@ -71,7 +71,7 @@ export default function CreateProduct() {
   }, []);
 
   return (
-    <VStack w="70%" mt="5vh" as="form" onSubmit={handleSubmit(handleSubmission)} alignItems="center" spacing="5%">
+    <VStack w="70%" mt="5vh" as="form" onSubmit={handleSubmit(submit)} alignItems="center" spacing="5%">
       <Heading as="h1" color="whiteAlpha.800">
         <b>Create Item</b>
       </Heading>
@@ -226,7 +226,7 @@ export default function CreateProduct() {
       <Button type="submit">
         Create
       </Button>
-      {didSubmit && <Text color="green">Product Created!</Text>}
+      {didSubmit && <Text color="green">Success!</Text>}
     </VStack>
   );
 }
