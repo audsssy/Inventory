@@ -14,6 +14,10 @@ import { getNetworkName, getChainInfo } from "../utils/formatters";
 // import { supportedChains } from "../constants/supportedChains";
 // import "../styles/style.css";
 import Layout from "../components/Layout";
+import { ethers } from "ethers";
+import { addresses } from "../components/eth/addresses";
+import { fetchProduct } from "../components/eth/fetchProduct";
+
 
 function MyApp({ Component, pageProps }) {
   const [web3, setWeb3] = useState(null);
@@ -24,20 +28,8 @@ function MyApp({ Component, pageProps }) {
   const [loading, setLoading] = useState(false);
   const [visibleView, setVisibleView] = useState(1);
   const [remount, setRemount] = useState(0);
-  const [dao, setDao] = useState(null);
-  const [proposals, setProposals] = useState(null);
-
-  useEffect(() => {
-    if (
-      typeof window !== "undefined" &&
-      typeof window.ethereum !== "undefined"
-    ) {
-      subscribe(window.ethereum);
-    }
-  }, []);
-
-  useEffect(() => {
-  }, [address]);
+  const [numOfProducts, setNumOfProducts] = useState(0);
+  const [products, setProducts] = useState(null);
 
   const subscribe = async (provider) => {
     provider.on("networkChanged", (net) => changeChain(net));
@@ -49,13 +41,41 @@ function MyApp({ Component, pageProps }) {
     });
   };
 
-  // const connectToInfura = async () => {
-  //   let result = await correctNetwork(address);
-  //   setWeb3(result["web3"]);
-  //   setDaoChain(result["chainId"]);
-  //   setChainId(result["chainId"]);
-  //   setAccount(null);
-  // };
+  const getProductCount = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(addresses.inventory, abi, signer);
+    const productId = await contract.productId();
+    productId = parseInt(ethers.utils.formatUnits(productId, "wei"));
+    setNumOfProducts(productId);
+  };
+
+  const getProducts = async () => {
+    var _products = [];
+
+    for (var i = 0; i < numOfProducts; i++) {
+      const product = await fetchProduct(i);
+      _products.push(product);
+    }
+    setProducts([..._products]);
+  };
+
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      typeof window.ethereum !== "undefined"
+    ) {
+      subscribe(window.ethereum);
+    }
+  }, []);
+
+  useEffect(() => {
+    getProductCount()
+    if (numOfProducts) {
+      getProducts();
+    }
+
+  }, [numOfProducts]);
 
   const connect = async () => {
     try {
@@ -177,9 +197,9 @@ function MyApp({ Component, pageProps }) {
             address: address,
             abi: abi,
             visibleView: visibleView,
-            dao: dao,
-            proposals: proposals,
             remount: remount,
+            products: products,
+            numOfProducts: numOfProducts,
           },
           setWeb3: setWeb3,
           setAccount: setAccount,
@@ -189,8 +209,6 @@ function MyApp({ Component, pageProps }) {
           setAddress: setAddress,
           connect: connect,
           setVisibleView: setVisibleView,
-          setDao: setDao,
-          setProposals: setProposals,
           setRemount: setRemount,
           switchChain: switchChain,
           toast: toast,

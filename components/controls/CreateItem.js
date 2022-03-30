@@ -21,6 +21,7 @@ import {
   Checkbox,
   Spacer,
   Select,
+  Box,
 } from "@chakra-ui/react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
@@ -31,9 +32,8 @@ import { ethers } from "ethers";
 
 export default function CreateProduct() {
   const value = useContext(AppContext);
-  const { web3, account } = value.state;
+  const { web3, account, products } = value.state;
   const [didSubmit, setDidSubmit] = useState(false);
-  var BN = web3.utils.BN;
   const { handleSubmit, register, control } = useForm();
 
   const { fields, append, remove } = useFieldArray({
@@ -41,11 +41,10 @@ export default function CreateProduct() {
     name: "variant",
   });
 
-
-
   const submit = async (values) => {
-    const { product, price, location, chip, digitization, variant, note } = values;
+    const { productId, price, location, chip, digitization, variant, note } = values;
 
+    productId--;
     let variants_ = []
     let quantities = []
     for (let i = 0; i < variant.length; i++) {
@@ -57,7 +56,8 @@ export default function CreateProduct() {
     } else {
       const factory = inventory(addresses.inventory, web3)
       try {
-        let result = await factory.methods.mintItem(product, variants_, ethers.utils.parseEther(price), location, chip, digitization, note).send({ from: account })
+        console.log(productId)
+        let result = await factory.methods.mintItem(productId, variants_, ethers.utils.parseEther(price), location, chip, digitization, note).send({ from: account })
         console.log("This is the result", result)
         setDidSubmit(true)
       } catch (e) {
@@ -68,6 +68,7 @@ export default function CreateProduct() {
 
   useEffect(() => {
     append({ variant: "" });
+    console.log(products)
   }, []);
 
   return (
@@ -78,14 +79,18 @@ export default function CreateProduct() {
       <br></br>
       <HStack w="80%">
         <FormControl isRequired>
-          <FormLabel color="whiteAlpha.800">Product ID: </FormLabel>
-          <Input
+          <FormLabel color="whiteAlpha.800">Product: </FormLabel>
+          <Select
             w="100%"
             color="white"
-            name="product"
-            placeholder="e.g., 0, 1, 2"
-            {...register("product")}
-          />
+            name="location"
+            placeholder="Select a product to mint"
+            {...register("productId")}
+          >
+            {(products) ? (products.map(({ id, brand, name}) => (
+              <option key={id} value={id}>{brand}'s {name}</option>
+            ))) : null}
+          </Select>
         </FormControl>
       </HStack>
       <HStack w="80%">
