@@ -14,6 +14,7 @@ export default function NavRightContainer() {
     "0x4744cda32be7b3e75b9334001da9ed21789d4c0d",
     "0x438b52BB250C5E8b6b41be30a93139f92b3c1DA8",
     "0x8494DF1b8e7508943DE2385331001363e5EA6038",
+    "0x02b42C1BE5fa429045f97197E75A4C9DdC5e341b",
   ];
 
   const copy = async () => {
