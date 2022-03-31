@@ -11,7 +11,7 @@ import {
   Heading,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import inventory from "../eth/Inventory";
+import inventory from "../eth/inventory";
 import { addresses } from "../eth/addresses";
 
 export default function CreateProduct() {
