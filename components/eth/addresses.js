@@ -1,6 +1,4 @@
 export const addresses = {
-  inventory: "0x6281e7c7F657Dc929865fa5946A381b69B8d772a",
+  inventory: "0x87C943BA9f09E7f4eb102b62A495CBF3e5477f7B",
+  inventoryNft: "0x87C943BA9f09E7f4eb102b62A495CBF3e5477f7B",
 }
-
-
-// 0xD278B49e81307ce730855FB2184060e2c347c2c8

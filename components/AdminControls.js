@@ -12,9 +12,9 @@ import {
 import { AiOutlineCheckCircle, AiOutlineWarning } from "react-icons/ai"
 import { getNetworkName } from "../utils/formatters";
 import CreateProduct from "./controls/CreateProduct"
-// import UpdateProduct from "./controls/UpdateProduct";
+import UpdateProduct from "./controls/UpdateProduct";
 import CreateItem from "./controls/CreateItem";
-// import UpdateItem from "./controls/UpdateItem";
+import UpdateItem from "./controls/UpdateItem";
 import ReadyAuction from "./controls/ReadyAuction"
 
 export default function AdminControls() {
@@ -145,8 +145,8 @@ export default function AdminControls() {
           <VStack align="flex-start">
             <Text fontStyle="italic" fontSize="3xl" color="white">Edit</Text>
             <HStack>
-              <Button>Product</Button>
-              <Button>Item</Button>
+              <Button onClick={toggleUp}>Product</Button>
+              <Button onClick={toggleUi}>Item</Button>
             </HStack>
           </VStack>
         </HStack>
@@ -157,7 +157,6 @@ export default function AdminControls() {
           <Text fontStyle="italic" fontSize="3xl" color="white">Ready</Text>
           <HStack>
             <Button onClick={toggleRa}>Ready for Auction</Button>
-
           </HStack>
         </VStack>
         <Spacer />

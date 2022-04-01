@@ -7,7 +7,8 @@ import { useState, useEffect } from "react";
 import theme from "../styles/theme";
 import "@fontsource/poppins/300.css";
 import "@fontsource/poppins/700.css";
-const abi = require("../abi/inventory.json");
+const inventoryAbi = require("../abi/inventory.json");
+const inventoryNftAbi = require("../abi/inventoryNft.json");
 import { createToast } from "../utils/toast";
 // import { correctNetwork } from "../utils/network";
 import { getNetworkName, getChainInfo } from "../utils/formatters";
@@ -17,7 +18,7 @@ import Layout from "../components/Layout";
 import { ethers } from "ethers";
 import { addresses } from "../components/eth/addresses";
 import { fetchProduct } from "../components/eth/fetchProduct";
-
+import { fetchItem } from "../components/eth/fetchItem";
 
 function MyApp({ Component, pageProps }) {
   const [web3, setWeb3] = useState(null);
@@ -30,6 +31,22 @@ function MyApp({ Component, pageProps }) {
   const [remount, setRemount] = useState(0);
   const [numOfProducts, setNumOfProducts] = useState(0);
   const [products, setProducts] = useState(null);
+  const [numOfItems, setNumberOfItems] = useState(0);
+  const [items, setItems] = useState(null)
+
+  let provider;
+  let signer;
+  if (typeof window !== 'undefined') {
+    console.log('You are on the browser')
+    // ✅ Can use window here
+    provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    signer = provider.getSigner();
+  } else {
+    console.log('You are on the server')
+    // ⛔️ Don't use window here
+  }
+  const inventoryContract = new ethers.Contract(addresses.inventory, inventoryAbi, signer);
+  const inventoryNftContract = new ethers.Contract(addresses.inventoryNft, inventoryNftAbi, signer);
 
   const subscribe = async (provider) => {
     provider.on("networkChanged", (net) => changeChain(net));
@@ -42,10 +59,7 @@ function MyApp({ Component, pageProps }) {
   };
 
   const getProductCount = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(addresses.inventory, abi, signer);
-    const productId = await contract.productId();
+    const productId = await inventoryContract.productId();
     productId = parseInt(ethers.utils.formatUnits(productId, "wei"));
     setNumOfProducts(productId);
   };
@@ -60,6 +74,22 @@ function MyApp({ Component, pageProps }) {
     setProducts([..._products]);
   };
 
+  const getItemCount = async () => {
+    const tokenId = await inventoryNftContract.totalSupply();
+    tokenId = parseInt(ethers.utils.formatUnits(tokenId, "wei"));
+    setNumberOfItems(tokenId)
+  }
+
+  const getItems = async () => {
+    var _items = [];
+
+    for (var i = 0; i < numOfItems; i++){
+      const item = await fetchItem(i);      
+      _items.push(item);
+    }
+    setItems([..._items])
+  }
+
   useEffect(() => {
     if (
       typeof window !== "undefined" &&
@@ -70,12 +100,17 @@ function MyApp({ Component, pageProps }) {
   }, []);
 
   useEffect(() => {
-    getProductCount()
+    getProductCount();
+    getItemCount();
     if (numOfProducts) {
       getProducts();
     }
+    if (numOfItems) {
 
-  }, [numOfProducts]);
+      getItems();
+    }
+
+  }, [numOfProducts, numOfItems]);
 
   const connect = async () => {
     try {
@@ -195,11 +230,13 @@ function MyApp({ Component, pageProps }) {
             daoChain: daoChain,
             loading: loading,
             address: address,
-            abi: abi,
+            abi: inventoryAbi,
             visibleView: visibleView,
             remount: remount,
             products: products,
             numOfProducts: numOfProducts,
+            items: items,
+            numOfItems: numOfItems,
           },
           setWeb3: setWeb3,
           setAccount: setAccount,

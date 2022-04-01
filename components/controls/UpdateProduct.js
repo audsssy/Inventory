@@ -30,7 +30,7 @@ import { addresses } from "../eth/addresses";
 import { ethers } from "ethers";
 
 
-export default function CreateItem() {
+export default function UpdateProduct() {
   const value = useContext(AppContext);
   const { web3, account, products } = value.state;
   const [didSubmit, setDidSubmit] = useState(false);
@@ -42,8 +42,9 @@ export default function CreateItem() {
   });
 
   const submit = async (values) => {
-    const { productId, price, location, chip, digitization, variant, note } = values;
-
+    const { productId, name, variant } = values;
+    console.log(values)
+    
     productId--;
     let variants_ = []
     let quantities = []
@@ -57,7 +58,7 @@ export default function CreateItem() {
       const factory = inventory(addresses.inventory, web3)
       try {
         console.log(productId)
-        let result = await factory.methods.mintItem(productId, variants_, ethers.utils.parseEther(price), location, chip, digitization, note).send({ from: account })
+        let result = await factory.methods.updateProduct(productId, name, variants_, quantities).send({ from: account })
         console.log("This is the result", result)
         setDidSubmit(true)
       } catch (e) {
@@ -94,64 +95,14 @@ export default function CreateItem() {
         </FormControl>
       </HStack>
       <HStack w="80%">
-        <FormControl isRequired>
-          <FormLabel color="whiteAlpha.800">Price: </FormLabel>
-          <Input
-            w="100%"
-            color="white"
-            name="price"
-            placeholder="e.g., 1, 2, 3"
-            {...register("price")}
-          />
-        </FormControl>
-      </HStack>
-      <HStack w="80%">
-        <FormControl isRequired>
-          <FormLabel color="whiteAlpha.800">Location: </FormLabel>
-          <Select
-            w="100%"
-            color="white"
-            name="location"
-            placeholder="Select a location"
-            {...register("location")}
-          >
-            <option value="0">Seller</option>
-            <option value="1">LGT HQ</option>
-            <option value="2">LGT Partner</option>
-            <option value="3">Transit</option>
-            <option value="4">Buyer</option>
-          </Select>
-        </FormControl>
-      </HStack>
-      <HStack w="80%" spacing={10} align="stretch">
-        <HStack w="40">
-          <Text color="whiteAlpha.800">LGT Tag Integration</Text>
-          <Checkbox
-            color="white"
-            name="chip"
-            {...register("chip")}
-          />
-        </HStack>
-        <Spacer />
-        <HStack w="40%">
-          <Text color="whiteAlpha.800">Product Digitization</Text>
-          <Checkbox
-            color="white"
-            name="digitization"
-            {...register("digitization")}
-          />
-
-        </HStack>
-      </HStack>
-      <HStack w="80%">
         <FormControl>
-          <FormLabel color="whiteAlpha.800">Notes: </FormLabel>
+          <FormLabel color="whiteAlpha.800">Name: </FormLabel>
           <Input
             w="100%"
             color="white"
             name="note"
-            placeholder="Notes"
-            {...register("note")}
+            placeholder="Name of product"
+            {...register("name")}
           />
         </FormControl>
       </HStack>
@@ -229,7 +180,7 @@ export default function CreateItem() {
       </Button>
       <br></br>
       <Button type="submit">
-        Create
+        Update
       </Button>
       {didSubmit && <Text color="green">Success!</Text>}
     </VStack>

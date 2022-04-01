@@ -37,11 +37,10 @@ export async function fetchProduct(productId) {
 
       productId++
       _product.id = productId
-      console.log(_product)
+      // console.log(_product)
     })
     .catch((e) => {
       console.log(e);
     });
   return _product;
-
 };

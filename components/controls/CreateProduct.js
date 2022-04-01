@@ -40,10 +40,10 @@ export default function CreateProduct() {
   const submit = async (values) => {
     const { brand, product, variant } = values;
     
-        let types = []
+        let variant_ = []
         let quantities = []
         for (let i = 0; i < variant.length; i++) {
-          types.push(variant[i].type)
+          variant_.push(variant[i].type)
           quantities.push(variant[i].quantity)
         }
     
@@ -52,7 +52,7 @@ export default function CreateProduct() {
     } else {
       const factory = inventory(addresses.inventory, web3)
       try {
-        let result = await factory.methods.createProduct(brand, product, types, quantities).send({ from: account })
+        let result = await factory.methods.createProduct(brand, product, variant_, quantities).send({ from: account })
         console.log("This is the result", result)
         setDidSubmit(true)
       } catch(e) {

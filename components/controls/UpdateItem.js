@@ -30,7 +30,7 @@ import { addresses } from "../eth/addresses";
 import { ethers } from "ethers";
 
 
-export default function CreateItem() {
+export default function UpdateItem() {
   const value = useContext(AppContext);
   const { web3, account, products } = value.state;
   const [didSubmit, setDidSubmit] = useState(false);
