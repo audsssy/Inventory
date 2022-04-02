@@ -35,7 +35,6 @@ export async function fetchProduct(productId) {
       _product.sold = ethers.utils.formatUnits(data[4][2].toString(), "wei")
       _product.shipped = ethers.utils.formatUnits(data[4][3].toString(), "wei")
 
-      productId++
       _product.id = productId
       // console.log(_product)
     })

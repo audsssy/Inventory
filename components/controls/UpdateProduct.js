@@ -75,7 +75,7 @@ export default function UpdateProduct() {
   return (
     <VStack w="70%" mt="5vh" as="form" onSubmit={handleSubmit(submit)} alignItems="center" spacing="5%">
       <Heading as="h1" color="whiteAlpha.800">
-        <b>Create Item</b>
+        <b>Edit Product</b>
       </Heading>
       <br></br>
       <HStack w="80%">

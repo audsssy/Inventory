@@ -68,7 +68,7 @@ export default function CreateItem() {
 
   useEffect(() => {
     append({ variant: "" });
-    console.log(products)
+    // console.log(products)
   }, []);
 
   return (

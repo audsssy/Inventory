@@ -32,26 +32,35 @@ function MyApp({ Component, pageProps }) {
   const [numOfProducts, setNumOfProducts] = useState(0);
   const [products, setProducts] = useState(null);
   const [numOfItems, setNumberOfItems] = useState(0);
-  const [items, setItems] = useState(null)
+  const [items, setItems] = useState(null);
+  // const [tokens, setTokens] = useState(null);
 
   let provider;
   let signer;
-  if (typeof window !== 'undefined') {
-    console.log('You are on the browser')
+  if (typeof window !== "undefined") {
+    // console.log('You are on the browser')
     // ✅ Can use window here
     provider = new ethers.providers.Web3Provider(window.ethereum, "any");
     signer = provider.getSigner();
   } else {
-    console.log('You are on the server')
+    // console.log('You are on the server')
     // ⛔️ Don't use window here
   }
-  const inventoryContract = new ethers.Contract(addresses.inventory, inventoryAbi, signer);
-  const inventoryNftContract = new ethers.Contract(addresses.inventoryNft, inventoryNftAbi, signer);
+  const inventoryContract = new ethers.Contract(
+    addresses.inventory,
+    inventoryAbi,
+    signer
+  );
+  const inventoryNftContract = new ethers.Contract(
+    addresses.inventoryNft,
+    inventoryNftAbi,
+    signer
+  );
 
   const subscribe = async (provider) => {
     provider.on("networkChanged", (net) => changeChain(net));
     provider.on("accountsChanged", (accounts) => changeAccount(accounts));
-    provider.on("connect", () => { });
+    provider.on("connect", () => {});
 
     provider.on("disconnect", () => {
       console.log("disconnected");
@@ -77,18 +86,50 @@ function MyApp({ Component, pageProps }) {
   const getItemCount = async () => {
     const tokenId = await inventoryNftContract.totalSupply();
     tokenId = parseInt(ethers.utils.formatUnits(tokenId, "wei"));
-    setNumberOfItems(tokenId)
-  }
+    setNumberOfItems(tokenId);
+  };
 
   const getItems = async () => {
     var _items = [];
 
-    for (var i = 0; i < numOfItems; i++){
-      const item = await fetchItem(i);      
+    for (var i = 0; i < numOfItems; i++) {
+      const item = await fetchItem(i);
       _items.push(item);
     }
-    setItems([..._items])
-  }
+    setItems([..._items]);
+  };
+
+  // const getTokens = () => {
+  //   let tokens_ = [];
+  //   // console.log(items, products)
+  //   if (products && items) {
+  //     console.log("products & items are present", products[0]["brand"], items[0]["tokenId"])
+  //     for (var i = 0; i < items.length; i++) {
+  //       for (var j = 0; j < products.length; j++)
+  //         if (items[i]["productId"] === products[j]["id"]) {
+  //           console.log("match found - ", items[i]["productId"])
+  //           const _token = {}
+  //           _token.tokenId = items[i]["tokenId"]
+  //           _token.brand = products[j]["brand"]
+  //           _token.price = items[i].price
+  //           _token.owner = items[i].owner
+  //           _token.variants = items[i].variants
+  //           _token.isChipped = items[i].isChipped
+  //           _token.isDigitized = items[i].isDigitized
+  //           _token.auctionStatus = items[i].auctionStatus
+  //           _token.isShipped = items[i].isShipped
+
+  //           tokens_.push(_token);
+  //           setTokens([...tokens_]);
+  //           console.log(products[j]["brand"], items[i].price, _token, tokens_)
+  //         } else {
+  //           console.log("cannot get tokens bc no match found")
+  //         }
+  //     } 
+  //   } else {
+  //     console.log("cannot get tokens bc products & items not found")
+  //   }
+  // };
 
   useEffect(() => {
     if (
@@ -97,20 +138,28 @@ function MyApp({ Component, pageProps }) {
     ) {
       subscribe(window.ethereum);
     }
+
+    getProductCount();
+    getItemCount();
   }, []);
 
   useEffect(() => {
-    getProductCount();
-    getItemCount();
     if (numOfProducts) {
       getProducts();
     }
     if (numOfItems) {
-
-      getItems();
+      getItems();  
     }
-
   }, [numOfProducts, numOfItems]);
+
+  // useEffect(() => {
+  //   getTokens();
+  // }, [items]);
+
+  // useEffect(() => {
+
+  // }, [tokens]);
+
 
   const connect = async () => {
     try {
@@ -129,7 +178,6 @@ function MyApp({ Component, pageProps }) {
         });
 
         const provider = await web3Modal.connect();
-
 
         let web3 = new Web3(provider);
 

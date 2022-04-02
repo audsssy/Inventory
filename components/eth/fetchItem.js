@@ -11,7 +11,7 @@ export async function fetchItem(tokenId) {
   contract
     .items(tokenId)
     .then((data) => {
-      _item.productId = ethers.utils.formatUnits(data[0].toString(), "wei");
+      _item.productId = parseInt(ethers.utils.formatUnits(data[0].toString(), "wei"));
       _item.tokenId = tokenId;
       _item.owner = data[1]
       _item.price = ethers.utils.formatUnits(data[2].toString(), "ether");
@@ -42,6 +42,6 @@ export async function fetchItem(tokenId) {
     (_item.hasBid && _item.isSold) ? _item.auctionStatus = "Auction ended" : _item.auctionStatus = "Auction in Progress"
     (_item.hasBid && !_item.isSold) ? _item.auctionStatus = "Auction in Progress" : _item.auctionStatus = "Auction in Progress"
 
-    console.log(_item)
+    // console.log(_item)
   return _item;
 };

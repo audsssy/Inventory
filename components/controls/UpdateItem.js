@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react"
+import React, { useState, useContext, useEffect } from "react";
 import AppContext from "../AppContext";
 import {
   FormLabel,
@@ -12,11 +12,6 @@ import {
   List,
   ListItem,
   IconButton,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
   color,
   Checkbox,
   Spacer,
@@ -25,15 +20,15 @@ import {
 } from "@chakra-ui/react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
-import inventory from "../eth/inventory";
-import { addresses } from "../eth/addresses";
-import { ethers } from "ethers";
-
 
 export default function UpdateItem() {
   const value = useContext(AppContext);
-  const { web3, account, products } = value.state;
+  const { web3, account, products, items } = value.state;
   const [didSubmit, setDidSubmit] = useState(false);
+  const [selection, setSelection] = useState("");
+  const [token, setToken] = useState(null);
+  const [tokens, setTokens] = useState(null);
+  const [form, setForm] = useState(false);
   const { handleSubmit, register, control } = useForm();
 
   const { fields, append, remove } = useFieldArray({
@@ -41,59 +36,210 @@ export default function UpdateItem() {
     name: "variant",
   });
 
-  const submit = async (values) => {
-    const { productId, price, location, chip, digitization, variant, note } = values;
+  const getTokens = () => {
+    let tokens_ = [];
+    if (products && items) {
+      // console.log("products & items are present", products[0]["brand"], items[0]["location"])
+      for (var i = 0; i < items.length; i++) {
+        for (var j = 0; j < products.length; j++)
+          if (items[i]["productId"] === products[j]["id"]) {
+            // console.log("match found - ", items[i]["productId"])
+            const _token = {};
+            _token.tokenId = items[i]["tokenId"];
+            _token.brand = products[j]["brand"];
+            _token.product = products[j]["name"];
+            _token.price = items[i]["price"];
+            _token.owner = items[i]["owner"];
+            _token.location = items[i]["location"];
+            _token.variants = items[i]["variants"];
+            _token.isChipped = items[i]["isChipped"];
+            _token.isDigitized = items[i]["isDigitized"];
+            _token.auctionStatus = items[i]["auctionStatus"];
+            _token.isShipped = items[i]["isShipped"];
 
-    productId--;
-    let variants_ = []
-    let quantities = []
-    for (let i = 0; i < variant.length; i++) {
-      variants_.push(variant[i].type)
-      quantities.push(variant[i].quantity)
-    }
-    if (web3 === null) {
-      value.toast("Please connect your wallet")
-    } else {
-      const factory = inventory(addresses.inventory, web3)
-      try {
-        console.log(productId)
-        let result = await factory.methods.mintItem(productId, variants_, ethers.utils.parseEther(price), location, chip, digitization, note).send({ from: account })
-        console.log("This is the result", result)
-        setDidSubmit(true)
-      } catch (e) {
-        console.log(e)
+            tokens_.push(_token);
+            setTokens([...tokens_]);
+            // console.log(products[j]["brand"], items[i].price, _token, tokens_);
+          } else {
+            console.log("cannot get tokens bc no match found");
+          }
       }
+    } else {
+      console.log("cannot get tokens bc products & items not found");
     }
+  };
+
+  const getLocation = (location) => {
+    switch (location) {
+      case 0:
+        return "Seller"
+      case 1:
+        return "LGT HQ"
+      case 2:
+        return "LGT Parnters"
+      case 3:
+        return "Transit"
+      case 4:
+        return "Buyer"
+    }
+  };
+
+  const toggleForm = () => {
+    console.log(form)
+    setForm(!form)
+    console.log(form)
   }
+  const submit = async (values) => {
+    const { tokenId, price, location, chip, digitization, variant, note } =
+      values;
+
+    console.log(values);
+
+    // productId--;s
+    // let variants_ = []
+    // let quantities = []
+    // for (let i = 0; i < variant.length; i++) {
+    //   variants_.push(variant[i].type)
+    //   quantities.push(variant[i].quantity)
+    // }
+    // if (web3 === null) {
+    //   value.toast("Please connect your wallet")
+    // } else {
+    //   const factory = inventory(addresses.inventory, web3)
+    //   try {
+    //     console.log(productId)
+    //     let result = await factory.methods.updateItem(productId, variants_, ethers.utils.parseEther(price), location, chip, digitization, note).send({ from: account })
+    //     console.log("This is the result", result)
+    //     setDidSubmit(true)
+    //   } catch (e) {
+    //     console.log(e)
+    //   }
+    // }
+  };
+
+  // useEffect(() => {
+  //   append({ variant: "" });
+  // }, []);
 
   useEffect(() => {
-    append({ variant: "" });
-    console.log(products)
+    getTokens();
   }, []);
 
+  useEffect(() => {
+    // console.log(items, products, tokens)
+    if (selection && tokens) {
+      // console.log(tokens[selection]);
+      setToken({
+        brand: tokens[selection]["brand"]
+          ? tokens[selection]["brand"]
+          : "loading",
+        product: tokens[selection]["product"],
+        owner: tokens[selection]["owner"],
+        variants: tokens[selection]["variants"],
+        price: tokens[selection]["price"],
+        isChipped: tokens[selection]["isChipped"],
+        isDigitized: tokens[selection]["isDigitized"],
+        location: tokens[selection]["location"],
+      });
+    }
+  }, [selection]);
+
   return (
-    <VStack w="70%" mt="5vh" as="form" onSubmit={handleSubmit(submit)} alignItems="center" spacing="5%">
+    <VStack
+      w="70%"
+      mt="5vh"
+      as="form"
+      onSubmit={handleSubmit(submit)}
+      alignItems="center"
+      spacing="5%"
+    >
       <Heading as="h1" color="whiteAlpha.800">
-        <b>Create Item</b>
+        <b>Edit Item</b>
       </Heading>
-      <br></br>
       <HStack w="80%">
         <FormControl isRequired>
-          <FormLabel color="whiteAlpha.800">Product: </FormLabel>
+          <FormLabel color="whiteAlpha.800">Item / Token: </FormLabel>
           <Select
             w="100%"
             color="white"
-            name="location"
-            placeholder="Select a product to mint"
-            {...register("productId")}
+            name="tokenId"
+            placeholder="Select a token"
+            {...register("tokenId")}
+            onChange={(e) => {
+              console.log(e.target.value);
+              setSelection(e.target.value);
+            }}
           >
-            {(products) ? (products.map(({ id, brand, name}) => (
-              <option key={id} value={id}>{brand}'s {name}</option>
-            ))) : null}
+            {tokens &&
+              tokens.map(({ tokenId, product, brand }) => (
+                <option key={tokenId} value={tokenId}>
+                  Token #{tokenId} - {brand}'s {product}
+                </option>
+              ))}
           </Select>
         </FormControl>
       </HStack>
-      <HStack w="80%">
+      <VStack w="80%" align="center">
+        {selection && token ? (
+          <VStack align="">
+            <HStack alignItems="start">
+              <Text color="white" fontStyle="italic">
+                Price:
+              </Text>
+              <Text color="yellow.300" fontStyle="italic">
+                {token["price"]} Ξ
+              </Text>
+            </HStack>
+            <HStack alignItems="start">
+              <Text color="white" fontStyle="italic">
+                Variants:
+              </Text>
+              <Text color="yellow.300" fontStyle="italic">
+                {token["variants"]}
+              </Text>
+            </HStack>
+            <HStack alignItems="start">
+              <Text color="white" fontStyle="italic">
+                Owner:
+              </Text>
+              <Text h="30px" color="yellow.300" fontStyle="italic">
+                {token["owner"]}
+              </Text>
+            </HStack>
+            <HStack alignItems="start">
+              <Text color="white" fontStyle="italic">
+                Location:
+              </Text>
+              <Text h="30px" color="yellow.300" fontStyle="italic">
+                {`${getLocation(token["location"])}`}
+              </Text>
+            </HStack>
+            <HStack alignItems="start">
+              <Text color="white" fontStyle="italic">
+                LGT Tag:
+              </Text>
+              <Text h="30px" color="yellow.300" fontStyle="italic">
+                {token["isChipped"] ? "✔️" : "❌"}
+              </Text>
+            </HStack>
+            <HStack alignItems="start">
+              <Text color="white" fontStyle="italic">
+                Digitization:
+              </Text>
+              <Text h="30px" color="yellow.300" fontStyle="italic">
+                {token["isDigitized"] ? "✔️" : "❌"}
+              </Text>
+            </HStack>
+          </VStack>
+        ) : (
+          ""
+        )}
+        <Button onClick={toggleForm}>Edit</Button>
+      </VStack>
+      
+      {form && (
+        <>
+        <HStack w="80%">
         <FormControl isRequired>
           <FormLabel color="whiteAlpha.800">Price: </FormLabel>
           <Input
@@ -102,6 +248,18 @@ export default function UpdateItem() {
             name="price"
             placeholder="e.g., 1, 2, 3"
             {...register("price")}
+          />
+        </FormControl>
+      </HStack>
+      <HStack w="80%">
+        <FormControl isRequired>
+          <FormLabel color="whiteAlpha.800">Owner: </FormLabel>
+          <Input
+            w="100%"
+            color="white"
+            name="owner"
+            placeholder="0xLGT"
+            {...register("owner")}
           />
         </FormControl>
       </HStack>
@@ -126,11 +284,7 @@ export default function UpdateItem() {
       <HStack w="80%" spacing={10} align="stretch">
         <HStack w="40">
           <Text color="whiteAlpha.800">LGT Tag Integration</Text>
-          <Checkbox
-            color="white"
-            name="chip"
-            {...register("chip")}
-          />
+          <Checkbox color="white" name="chip" {...register("chip")} />
         </HStack>
         <Spacer />
         <HStack w="40%">
@@ -140,7 +294,6 @@ export default function UpdateItem() {
             name="digitization"
             {...register("digitization")}
           />
-
         </HStack>
       </HStack>
       <HStack w="80%">
@@ -156,35 +309,72 @@ export default function UpdateItem() {
         </FormControl>
       </HStack>
       <List spacing={10} width="80%" className="alternating-list">
+        <HStack align="flex-start">
+          <Text color="whiteAlpha.900" fontSize="medium">
+            Item Variant:{" "}
+          </Text>
+          {selection && token ? (
+            <>
+              <Text h="30px" color="yellow.300" fontStyle="italic">
+                {token["variants"]}
+              </Text>
+            </>
+          ) : (
+            ""
+          )}
+          <Spacer />
+          {selection && token ? (
+            <>
+              <Button
+                size="sm"
+                onClick={() => append({ variant: "" })}
+                color="gray.900"
+              >
+                Update
+              </Button>
+            </>
+          ) : (
+            <Text color="whiteAlpha.800">Pick an item to display type</Text>
+          )}
+        </HStack>
+
         {fields.map((variant, index) => (
           <ListItem
             display="flex"
             flexDirection="row"
-            alignContent="center"
-            justifyContent="center"
+            justifyItems="center"
             key={variant.id}
           >
-            <Controller
-              name={`variant.${index}.type`}
-              control={control}
-              defaultValue={variant.type}
-              render={({ field }) => (
-                <FormControl isRequired>
-                  <FormLabel htmlFor={`variant.${index}.type`} color="whiteAlpha.800">
-                    Type
-                  </FormLabel>
-                  <Input
-                    color="whiteAlpha.800"
-                    placeholder="e.g., color, size"
-                    {...field}
-                    {...register(`variant.${index}.type`, {
-                      required: "You must indicate a product type!",
-                    })}
-                  />
-                </FormControl>
-              )}
-            />
-            <Controller
+            <HStack w="100%" align="flex-start">
+              <Controller
+                name={`variant.${index}.type`}
+                control={control}
+                defaultValue={variant.type}
+                render={({ field }) => (
+                  <FormControl isRequired>
+                    <Input
+                      w="80%"
+                      color="whiteAlpha.800"
+                      placeholder="e.g., color, size"
+                      value={token && token["variants"]}
+                      {...field}
+                      {...register(`variant.${index}.type`, {
+                        required: "You must indicate a product type!",
+                      })}
+                    />
+                  </FormControl>
+                )}
+              />
+              <Spacer />
+              <IconButton
+                className="delete-icon"
+                aria-label="delete variant"
+                icon={<AiOutlineDelete />}
+                onClick={() => remove(index)}
+              />
+            </HStack>
+
+            {/* <Controller
               name={`variant.${index}.quantity`}
               control={control}
               defaultValue={variant.quantity}
@@ -206,32 +396,21 @@ export default function UpdateItem() {
                         </NumberInputStepper>
                       </NumberInput>
                     )}
-                  />
-                  {/* NOTE: <NumInputField/> is not compatible with react-hook-form. Using documentElementById was bypassing this and allowed for NaN and zero values.*/}
-                </FormControl>
-              )}
-            />
-            <IconButton
-              className="delete-icon"
-              aria-label="delete variant"
-              mt={8}
-              ml={2}
-              icon={<AiOutlineDelete />}
-              onClick={() => remove(index)}
-            />
+                  /> */}
+            {/* NOTE: <NumInputField/> is not compatible with react-hook-form. Using documentElementById was bypassing this and allowed for NaN and zero values.*/}
+            {/* </FormControl>
+              )} */}
+            {/* /> */}
           </ListItem>
         ))}
       </List>
-      <Button
-        onClick={() => append({ variant: "" })}
-      >
-        + Add Type
-      </Button>
+      {/* <Button onClick={() => append({ variant: "" })}>+ Add Type</Button> */}
       <br></br>
-      <Button type="submit">
-        Create
-      </Button>
+      <Button type="submit">Create</Button>
       {didSubmit && <Text color="green">Success!</Text>}
+        </>
+      )}
+      
     </VStack>
   );
 }

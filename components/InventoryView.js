@@ -15,10 +15,13 @@ import { ethers } from "ethers";
 const abi = require("../abi/inventory.json");
 import { fetchProduct } from "./eth/fetchProduct";
 
-export default function InventoryView() {
+export default function InventoryView({ loadData }) {
   const value = useContext(AppContext);
   const { products } = value.state;
 
+  useEffect(() => {
+    
+  }, [loadData]);
 
   return (
     <Box bg="blue" color="white">
@@ -38,7 +41,7 @@ export default function InventoryView() {
           </Tr>
         </Thead>
         <Tbody>
-          {products && (products.map(({id, brand, name, variants, quantity, available, reserved, sold, shipped}) => (
+          {loadData && (products.map(({id, brand, name, variants, quantity, available, reserved, sold, shipped}) => (
             <Tr bg={"yellow.300"} color="black">
               <Td>{id}</Td>
               <Td >{brand}</Td>

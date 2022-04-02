@@ -43,7 +43,7 @@ export default function CreateProduct() {
       <br></br>
       <HStack w="80%" spacing="10%">
         <FormControl isRequired>
-          <FormLabel color="whiteAlpha.800">Item ID: </FormLabel>
+          <FormLabel color="whiteAlpha.800">Token ID: </FormLabel>
           <Input
             w="100%"
             color="white"
