@@ -45,7 +45,6 @@ export default function UpdateProduct() {
     const { productId, name, variant } = values;
     console.log(values)
     
-    productId--;
     let variants_ = []
     let quantities = []
     for (let i = 0; i < variant.length; i++) {

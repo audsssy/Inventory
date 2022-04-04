@@ -26,14 +26,17 @@ export default function TokenActivity({ loadData }) {
           setTokens([...tokens_]);
         }
     }
+
+    console.log("called x times")
   };
 
   useEffect(() => {
     if (loadData && products && items) {
       getTokens();
     }
+    console.log(products, items)
     // console.log("loadData in Token Activity - ", loadData)
-  }, [loadData, products, items]);
+  }, [loadData]);
 
   return (
     <Box bg="blue" color="white">

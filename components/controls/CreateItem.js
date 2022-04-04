@@ -44,7 +44,7 @@ export default function CreateItem() {
   const submit = async (values) => {
     const { productId, price, location, chip, digitization, variant, note } = values;
 
-    productId--;
+    console.log(ethers.utils.parseEther(price))
     let variants_ = []
     let quantities = []
     for (let i = 0; i < variant.length; i++) {
